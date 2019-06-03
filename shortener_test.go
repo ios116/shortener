@@ -7,10 +7,10 @@ import (
 
 func TestShort(t *testing.T) {
 
-	urls := urls{
+	urls := Urls{
 		ID:        20000,
-		urls:      make(map[string]string),
-		shemeHost: "https://otus.ru",
+		Links:      make(map[string]string),
+		ShemeHost: "https://otus.ru",
 	}
 
 	orirginalURL := "https://ya.ru/hello/word/"

@@ -8,7 +8,7 @@ import (
 func init() {
 	// url := url {
 	// 	ID : 0,
-	// 	urls: make(map[string]string),
+	// 	Urls: make(map[string]string),
 	// }
 }
 
@@ -18,30 +18,33 @@ type Shortener interface {
 	Resolver(short string) string
 }
 
-type urls struct {
+// Urls ID - start value, Links is map short an original links
+type Urls struct {
 	sync.Mutex
 	ID        int
-	urls      map[string]string
-	shemeHost string
+	Links      map[string]string
+	ShemeHost string
 }
 
-func (u *urls) Shorten(orirignal string) string {
+// Shorten makes a shorе url from an orirignal url
+func (u *Urls) Shorten(orirignal string) string {
 	u.Lock()
 	defer u.Unlock()
-	if val, ok := u.urls[orirignal]; ok {
+	if val, ok := u.Links[orirignal]; ok {
 		return val
 	}
 	u.ID++
-	shortURL := fmt.Sprintf("%s/%s", u.shemeHost, u.Encode(u.ID))
-	u.urls[orirignal] = shortURL
+	shortURL := fmt.Sprintf("%s/%s", u.ShemeHost, u.Encode(u.ID))
+	u.Links[orirignal] = shortURL
 	return shortURL
 }
 
-func (u *urls) Resolver(short string) string {
+// Resolver makes an orirignal url from a short url
+func (u *Urls) Resolver(short string) string {
 
 	u.Lock()
 	defer u.Unlock()
-	for k, v := range u.urls {
+	for k, v := range u.Links {
 		if v == short {
 			return k
 		}
@@ -49,7 +52,8 @@ func (u *urls) Resolver(short string) string {
 	return ""
 }
 
-func (u *urls) Encode(id int) string {
+// Encode to int to base62
+func (u *Urls) Encode(id int) string {
 	alphabet := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 	base := len(alphabet)
 	b := make([]byte, 0)
