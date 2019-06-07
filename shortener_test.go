@@ -9,7 +9,8 @@ func TestShort(t *testing.T) {
 
 	urls := Urls{
 		ID:        20000,
-		Links:      make(map[string]string),
+		LinksShort:      make(map[string]string),
+		LinksOriginal:      make(map[string]string),
 		ShemeHost: "https://otus.ru",
 	}
 

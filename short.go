@@ -20,9 +20,10 @@ type Shortener interface {
 
 // Urls ID - start value, Links is map short an original links
 type Urls struct {
-	sync.Mutex
+	sync.RWMutex
 	ID        int
-	Links      map[string]string
+	LinksShort      map[string]string
+	LinksOriginal      map[string]string
 	ShemeHost string
 }
 
@@ -30,29 +31,27 @@ type Urls struct {
 func (u *Urls) Shorten(orirignal string) string {
 	u.Lock()
 	defer u.Unlock()
-	if val, ok := u.Links[orirignal]; ok {
+	if val, ok := u.LinksOriginal[orirignal]; ok {
 		return val
 	}
 	u.ID++
 	shortURL := fmt.Sprintf("%s/%s", u.ShemeHost, u.Encode(u.ID))
-	u.Links[orirignal] = shortURL
+	u.LinksOriginal[orirignal] = shortURL
+	u.LinksShort[shortURL] = orirignal
 	return shortURL
 }
 
 // Resolver makes an orirignal url from a short url
 func (u *Urls) Resolver(short string) string {
-
-	u.Lock()
-	defer u.Unlock()
-	for k, v := range u.Links {
-		if v == short {
-			return k
-		}
+	u.RLock()
+	defer u.RUnlock()
+	if val, ok := u.LinksShort[short]; ok {
+		return val
 	}
 	return ""
 }
 
-// Encode to int to base62
+// Encode int to base62
 func (u *Urls) Encode(id int) string {
 	alphabet := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 	base := len(alphabet)
