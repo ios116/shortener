@@ -14,7 +14,7 @@ func init() {
 
 // Shortener interface
 type Shortener interface {
-	Shorten(orirignal string) string
+	Shorten(original string) string
 	Resolver(short string) string
 }
 
@@ -27,21 +27,21 @@ type Urls struct {
 	ShemeHost string
 }
 
-// Shorten makes a shorе url from an orirignal url
-func (u *Urls) Shorten(orirignal string) string {
+// Shorten makes a shorе url from an original url
+func (u *Urls) Shorten(original string) string {
 	u.Lock()
 	defer u.Unlock()
-	if val, ok := u.LinksOriginal[orirignal]; ok {
+	if val, ok := u.LinksOriginal[original]; ok {
 		return val
 	}
 	u.ID++
 	shortURL := fmt.Sprintf("%s/%s", u.ShemeHost, u.Encode(u.ID))
-	u.LinksOriginal[orirignal] = shortURL
-	u.LinksShort[shortURL] = orirignal
+	u.LinksOriginal[original] = shortURL
+	u.LinksShort[shortURL] = original
 	return shortURL
 }
 
-// Resolver makes an orirignal url from a short url
+// Resolver makes an original url from a short url
 func (u *Urls) Resolver(short string) string {
 	u.RLock()
 	defer u.RUnlock()
